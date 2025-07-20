@@ -1,18 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// App.jsx
+import React, { useContext } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Home from './pages/Home';
+import AuthCard from './components/auth/Login';
+import Signup from './components/auth/Signup';
+import RoleSelector from './components/auth/RoleSelector';
+import About from './pages/About';
+import { AuthContext, AuthProvider } from './context/AuthContext';
 
-function App() {
-  const [count, setCount] = useState(0)
+const AppRoutes = () => {
+  const { isAuthenticated } = useContext(AuthContext);
 
   return (
-    <div>
-      <h1>Welcome to Connecthire</h1>
-      <p>Count is: {count}</p>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
-    </div>
-  )
+    <Routes>
+      <Route
+        path="/"
+        element={isAuthenticated ? <Home /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/login"
+        element={!isAuthenticated ? <AuthCard /> : <Navigate to="/" replace />}
+      />
+      <Route
+        path="/signup"
+        element={!isAuthenticated ? <Signup /> : <Navigate to="/" replace />}
+      />
+      <Route
+        path="/role"
+        element={<RoleSelector onSelect={(role) => alert(`Selected: ${role}`)} />}
+      />
+      <Route path="/about" element={<About />} />
+      {/* Optional: 404 Not Found */}
+      <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
+    </Routes>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;

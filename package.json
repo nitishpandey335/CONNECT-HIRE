@@ -1,0 +1,15 @@
+{
+  "name": "connecthire",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix connecthire-backend\""
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
