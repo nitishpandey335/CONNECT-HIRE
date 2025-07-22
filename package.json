@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix connecthire-backend\""
-},
+    "dev": "concurrently \"npm run dev --prefix frontend\" \"cross-env PORT=5050 npm run dev --prefix connecthire-backend\""
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^9.2.0"
+    "concurrently": "^9.2.0",
+    "cross-env": "^7.0.3"
   }
 }

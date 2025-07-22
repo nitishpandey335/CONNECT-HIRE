@@ -1,25 +1,32 @@
+// src/auth/Login.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import './Auth.css';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import './auth.css';
 
-const AuthCard = () => {
-  const navigate = useNavigate();
-  const { login, signup } = useAuth();
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [signupName, setSignupName] = useState('');
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [signupRole, setSignupRole] = useState('jobseeker');
+const Login = () => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false
+  });
+  const [activeTab, setActiveTab] = useState('jobseeker');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const res = await login(loginEmail, loginPassword);
+    const res = await login(formData.email, formData.password);
     if (res.success) {
       navigate('/');
     } else {
@@ -27,55 +34,94 @@ const AuthCard = () => {
     }
   };
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    const res = await signup(signupName, signupEmail, signupPassword, signupRole);
-    if (res.success) {
-      setSuccess('Signup successful! Please login.');
-      setIsFlipped(false);
-    } else {
-      setError(res.error || 'Signup failed');
-    }
-  };
-
   return (
-    <div className="auth-bg-simple">
-      <div className="auth-card-simple">
-        {!isFlipped ? (
-          <>
-            <h2 className="welcome-heading">Welcome Back</h2>
-            <h3 className="auth-title">Login</h3>
-            <form className="auth-form" onSubmit={handleLogin}>
-              <input type="email" placeholder="Email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
-              <input type="password" placeholder="Password" required value={loginPassword} onChange={e => setLoginPassword(e.target.value)} />
-              <button type="submit">Login</button>
-              {error && <div style={{ color: 'red', marginTop: '0.5rem' }}>{error}</div>}
-            </form>
-            <p>Don't have an account? <button className="link-btn" onClick={() => { setIsFlipped(true); setError(''); setSuccess(''); }}>Signup</button></p>
-          </>
-        ) : (
-          <>
-            <h3 className="auth-title">Signup</h3>
-            <form className="auth-form" onSubmit={handleSignup}>
-              <input type="text" placeholder="Name" required value={signupName} onChange={e => setSignupName(e.target.value)} />
-              <input type="email" placeholder="Email" required value={signupEmail} onChange={e => setSignupEmail(e.target.value)} />
-              <input type="password" placeholder="Password" required value={signupPassword} onChange={e => setSignupPassword(e.target.value)} />
-              <select required value={signupRole} onChange={e => setSignupRole(e.target.value)}>
-                <option value="jobseeker">Job Seeker</option>
-                <option value="employer">Employer</option>
-              </select>
-              <button type="submit">Signup</button>
-              {error && <div style={{ color: 'red', marginTop: '0.5rem' }}>{error}</div>}
-              {success && <div style={{ color: 'green', marginTop: '0.5rem' }}>{success}</div>}
-            </form>
-            <p>Already have an account? <button className="link-btn" onClick={() => { setIsFlipped(false); setError(''); setSuccess(''); }}>Login</button></p>
-          </>
-        )}
+    <div className="auth-container">
+      <div className="auth-header">
+        <h1>Welcome Back to ConnectHire</h1>
+        <p>Login to continue your journey</p>
+      </div>
+      <div className="login-tabs">
+        <button 
+          className={`tab ${activeTab === 'jobseeker' ? 'active' : ''}`}
+          onClick={() => setActiveTab('jobseeker')}
+        >
+          <i className="fas fa-user-tie"></i> Job Seeker
+        </button>
+        <button 
+          className={`tab ${activeTab === 'employer' ? 'active' : ''}`}
+          onClick={() => setActiveTab('employer')}
+        >
+          <i className="fas fa-briefcase"></i> Employer
+        </button>
+      </div>
+      {error && <div style={{color: 'red', marginBottom: 10}}>{error}</div>}
+      <form onSubmit={handleSubmit} className="auth-form">
+        <div className="form-group">
+          <label htmlFor="email">Email Address</label>
+          <div className="input-with-icon">
+            <i className="fas fa-envelope"></i>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="john@example.com"
+              required
+            />
+          </div>
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <div className="input-with-icon">
+            <i className="fas fa-lock"></i>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+        </div>
+        <div className="form-row">
+          <div className="form-group remember">
+            <input 
+              type="checkbox" 
+              id="rememberMe" 
+              name="rememberMe" 
+              checked={formData.rememberMe}
+              onChange={handleChange}
+            />
+            <label htmlFor="rememberMe">Remember me</label>
+          </div>
+          <div className="forgot-password">
+            <a href="#">Forgot password?</a>
+          </div>
+        </div>
+        <button type="submit" className="auth-btn">
+          Login to Your Account
+          <span className="btn-edge"></span>
+        </button>
+      </form>
+      <div className="social-login">
+        <p>Or continue with</p>
+        <div className="social-buttons">
+          <button className="social-btn google" type="button" onClick={() => alert('Google login coming soon!')} disabled>
+            <i className="fab fa-google"></i> Google
+          </button>
+          <button className="social-btn linkedin" type="button" onClick={() => alert('LinkedIn login coming soon!')} disabled>
+            <i className="fab fa-linkedin"></i> LinkedIn
+          </button>
+        </div>
+      </div>
+      <div className="auth-footer">
+        <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
       </div>
     </div>
   );
 };
 
-export default AuthCard;
+export default Login;

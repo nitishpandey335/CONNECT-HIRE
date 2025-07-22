@@ -1,0 +1,60 @@
+/* CompanyProfile.css */
+.company-card {
+  perspective: 1500px;
+  width: 300px;
+  height: 400px;
+}
+
+.company-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.company-card:hover .company-card-inner {
+  transform: rotateY(180deg);
+}
+
+.company-card-front,
+.company-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.company-card-front {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: white;
+}
+
+.company-card-back {
+  background: linear-gradient(135deg, #ff9d6c 0%, #bb4e75 100%);
+  color: white;
+  transform: rotateY(180deg);
+}
+
+.company-logo {
+  width: 80px;
+  height: 80px;
+  background: white;
+  color: #bb4e75;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}

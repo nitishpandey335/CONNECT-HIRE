@@ -7,12 +7,14 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     setIsAuthenticated(!!token);
     setUser(userData ? JSON.parse(userData) : null);
+    setLoading(false);
   }, []);
 
   const login = async (email, password) => {
@@ -28,8 +30,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signup = async (name, email, password, role) => {
-    const res = await signupApi(name, email, password, role);
+  const signup = async (name, username, email, password, role) => {
+    const res = await signupApi(name, username, email, password, role);
     if (res.message) {
       return { success: true };
     } else {
@@ -45,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, signup, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, signup, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
