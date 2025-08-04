@@ -4,11 +4,11 @@ import './ProfileForm.css';
 
 const ProfileForm = () => {
   const [formData, setFormData] = useState({
-    name: 'Alex Johnson',
+    name: 'Nitish Pandey',
     title: 'Senior UX Designer',
     location: 'San Francisco, CA',
-    email: 'alex.johnson@example.com',
-    phone: '(415) 555-0139',
+    email: 'xyz@gmail.com',
+    phone: '+91 12345 67890',
     bio: 'Experienced UX designer with 8+ years in creating user-centered digital experiences. Passionate about solving complex problems through intuitive design.',
     skills: 'UI/UX Design, User Research, Prototyping, Figma, Adobe Creative Suite'
   });

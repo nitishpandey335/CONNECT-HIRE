@@ -38,7 +38,9 @@ const Home = () => {
             <div className="animated-card">
               <div className="card-content">
                 <div className="profile-badge">
-                  <div className="profile-pic"></div>
+                  <div className="profile-pic">
+                     <img src="/images/Nikita.jpg" alt="Nikita" className="author-image" />
+                  </div>
                   <div className="profile-info">
                     <span className="name">Nikita</span>
                     <span className="title">Senior Developer</span>
@@ -138,9 +140,11 @@ const Home = () => {
               <div className="quote-icon">"</div>
               <p>ConnectHire helped me find my dream job in just two weeks! The process was seamless and efficient.</p>
               <div className="testimonial-author">
-                <div className="author-pic"></div>
+                <div className="author-pic">
+                   <img src="/images/Nikita.jpg" alt="Nikita" className="author-image" />
+                </div>
                 <div className="author-info">
-                  <span className="name">Prince</span>
+                  <span className="name">Nikita</span>
                   <span className="role">Senior Developer at TechCorp</span>
                 </div>
               </div>
@@ -150,7 +154,9 @@ const Home = () => {
               <div className="quote-icon">"</div>
               <p>We found three perfect candidates for our engineering team in less than a week. Incredible platform!</p>
               <div className="testimonial-author">
-                <div className="author-pic"></div>
+                <div className="author-pic">
+                  <img src="/images/rishabh.jpg" alt="Rishabh" className="author-image" />
+                </div>
                 <div className="author-info">
                   <span className="name">Rishabh</span>
                   <span className="role">HR Director at InnovateX</span>
@@ -165,8 +171,8 @@ const Home = () => {
           <h2>Ready to Transform Your Career?</h2>
           <p>Join thousands of professionals and companies finding success with ConnectHire</p>
           <div className="cta-buttons">
-            <button className="cta-btn primary">Sign Up as Job Seeker</button>
-            <button className="cta-btn secondary">Post a Job Opening</button>
+            <Link to="/signup" className="cta-btn primary">Sign Up as Job Seeker</Link>
+            <Link to="/post-job" className="cta-btn secondary">Post a Job Opening</Link>
           </div>
         </section>
       </div>

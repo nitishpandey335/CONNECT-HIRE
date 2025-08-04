@@ -1,85 +1,104 @@
-// src/components/JobCard.jsx
 import React, { useState } from 'react';
 import './JobCard.css';
+import ApplicationModal from './ApplicationModal';
 
 const JobCard = () => {
-  const [isFlipped, setIsFlipped] = useState(false);
-  
-  const handleFlip = () => {
-    setIsFlipped(!isFlipped);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+
+  const availableJobs = [
+    {
+      id: 1,
+      company: 'Tech Innovations Inc.',
+      position: 'Senior React Developer',
+      location: 'San Francisco, CA',
+      salary: '$120,000 - $150,000',
+      description: 'We are looking for an experienced React developer to join our team...',
+      requirements: [
+        '5+ years of React experience',
+        'Strong JavaScript fundamentals',
+        'Experience with Redux',
+        'Familiarity with modern frontend build tools'
+      ]
+    },
+    {
+      id: 2,
+      company: 'Data Systems Corp',
+      position: 'Full Stack Developer',
+      location: 'New York, NY',
+      salary: '$110,000 - $130,000',
+      description: 'Looking for a full stack developer with experience in Node.js and React...',
+      requirements: [
+        '3+ years of experience with JavaScript',
+        'Experience with React and Node.js',
+        'Familiarity with database systems',
+        'Strong problem-solving skills'
+      ]
+    }
+  ];
+
+  const handleApplyClick = (job) => {
+    setSelectedJob(job);
+    setShowApplicationModal(true);
   };
-  
+
   return (
     <div className="job-card-container">
-      <div className={`job-card ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
-        <div className="job-card-front">
-          <div className="job-header">
-            <div className="company-logo">
-              <div className="logo-placeholder">NT</div>
+      <h2>Available Jobs</h2>
+      <div className="job-cards-list">
+        {availableJobs.map((job) => (
+          <div key={job.id} className="job-card">
+            <div className="job-card-header">
+              <h3>{job.position}</h3>
+              <span className="job-status">New</span>
             </div>
-            <div className="job-info">
-              <h3 className="job-title">Senior UX Designer</h3>
-              <p className="company-name">Nexus Technologies</p>
+            <div className="job-company">{job.company}</div>
+            <div className="job-details">
+              <div className="detail-item">
+                <i className="fas fa-map-marker-alt"></i>
+                <span>{job.location}</span>
+              </div>
+              <div className="detail-item">
+                <i className="fas fa-dollar-sign"></i>
+                <span>{job.salary}</span>
+              </div>
+            </div>
+            <div className="job-description">
+              <p>{job.description}</p>
+              <div className="job-requirements">
+                <h4>Requirements:</h4>
+                <ul>
+                  {job.requirements.map((req, index) => (
+                    <li key={index}>{req}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="job-actions">
+              <button 
+                className="apply-btn"
+                onClick={() => handleApplyClick(job)}
+              >
+                <i className="fas fa-paper-plane"></i> Apply Now
+              </button>
+              <button className="details-btn">
+                <i className="fas fa-info-circle"></i> View Details
+              </button>
             </div>
           </div>
-          
-          <div className="job-details">
-            <div className="detail-item">
-              <span className="detail-icon">💰</span>
-              <span>$110,000 - $130,000</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-icon">📍</span>
-              <span>San Francisco, CA</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-icon">⏱️</span>
-              <span>Full-time</span>
-            </div>
-          </div>
-          
-          <div className="job-tags">
-            <span className="tag">UX Design</span>
-            <span className="tag">Figma</span>
-            <span className="tag">User Research</span>
-          </div>
-          
-          <div className="job-footer">
-            <span className="time-posted">Posted 2 days ago</span>
-            <button className="btn-view">View Details</button>
-          </div>
-        </div>
-        
-        <div className="job-card-back">
-          <h3>Job Description</h3>
-          <p>
-            We're looking for a talented Senior UX Designer to join our product team. 
-            You'll be responsible for creating intuitive and engaging user experiences 
-            across our digital platforms.
-          </p>
-          
-          <h4>Responsibilities:</h4>
-          <ul>
-            <li>Lead UX design for new features and products</li>
-            <li>Conduct user research and usability testing</li>
-            <li>Create wireframes, prototypes, and high-fidelity designs</li>
-            <li>Collaborate with product managers and engineers</li>
-          </ul>
-          
-          <h4>Requirements:</h4>
-          <ul>
-            <li>5+ years of UX design experience</li>
-            <li>Proficiency in Figma and Adobe Creative Suite</li>
-            <li>Strong portfolio showcasing UX process</li>
-            <li>Excellent communication and collaboration skills</li>
-          </ul>
-          
-          <div className="back-footer">
-            <button className="btn-apply">Apply Now</button>
-            <button className="btn-save">Save Job</button>
-          </div>
-        </div>
+        ))}
       </div>
+
+      {showApplicationModal && (
+        <ApplicationModal
+          job={selectedJob}
+          onClose={() => setShowApplicationModal(false)}
+          onSubmit={(formData) => {
+            console.log('Application submitted:', formData);
+            setShowApplicationModal(false);
+          }}
+        />
+      )}
     </div>
   );
 };
