@@ -2,20 +2,22 @@
 import React, { useState, useEffect } from 'react';
 import './EmployerDashboard.css';
 import { useAuth } from '../context/AuthContext';
+import CompanyProfile from '../components/employer/CompanyProfile';
+import DeveloperCard from '../components/employer/DeveloperCard';
+import JobRequestForm from '../components/employer/JobRequestForm';
+import JobCard from '../components/employer/JobCard';
+import ApplicantRow from '../components/employer/ApplicantRow';
+import DashboardOverview from '../components/employer/DashboardOverview';
 
 const EmployerDashboard = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
-  const [newJob, setNewJob] = useState({
-    title: '',
-    description: '',
-    type: 'Full-time',
-    salary: '',
-    location: '',
-    remote: false
-  });
+  const [showCompanyProfile, setShowCompanyProfile] = useState(false);
+  const [selectedDeveloper, setSelectedDeveloper] = useState(null);
+  const [filteredApplications, setFilteredApplications] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Mock data initialization
   useEffect(() => {
@@ -27,24 +29,22 @@ const EmployerDashboard = () => {
         posted: '2023-10-15',
         applications: 24,
         status: 'Active',
-        salary: '$120,000 - $140,000'
+        salary: '$120,000 - $140,000',
+        description: 'Looking for an experienced frontend developer to lead our team.',
+        type: 'Full-time',
+        location: 'Remote'
       },
       {
         id: 2,
-        title: 'UX/UI Designer',
-        posted: '2023-10-10',
+        title: 'Backend Engineer',
+        posted: '2023-11-01',
         applications: 18,
         status: 'Active',
-        salary: '$90,000 - $110,000'
+        salary: '$110,000 - $130,000',
+        description: 'Node.js developer needed for API development.',
+        type: 'Full-time',
+        location: 'New York, NY'
       },
-      {
-        id: 3,
-        title: 'Backend Engineer (Node.js)',
-        posted: '2023-09-28',
-        applications: 32,
-        status: 'Closed',
-        salary: '$130,000 - $150,000'
-      }
     ];
     
     // Simulating API call to fetch applications
@@ -55,73 +55,60 @@ const EmployerDashboard = () => {
         position: 'Senior Frontend Developer',
         status: 'New',
         date: '2023-10-20',
-        experience: '5 years'
+        experience: '5 years',
+        skills: ['React', 'JavaScript', 'TypeScript'],
+        bio: 'Experienced frontend developer with 5+ years in building responsive web applications',
+        email: 'sarah@example.com',
+        phone: '(123) 456-7890',
+        portfolio: 'sarahdev.com'
       },
       {
         id: 2,
         name: 'Michael Chen',
-        position: 'Senior Frontend Developer',
-        status: 'Reviewed',
-        date: '2023-10-18',
-        experience: '7 years'
-      },
-      {
-        id: 3,
-        name: 'Emma Rodriguez',
-        position: 'UX/UI Designer',
-        status: 'Interview',
-        date: '2023-10-17',
-        experience: '4 years'
-      },
-      {
-        id: 4,
-        name: 'David Kim',
         position: 'Backend Engineer',
-        status: 'Rejected',
-        date: '2023-10-10',
-        experience: '6 years'
-      }
+        status: 'Reviewed',
+        date: '2023-11-05',
+        experience: '4 years',
+        skills: ['Node.js', 'Express', 'MongoDB'],
+        bio: 'Backend specialist with experience in building scalable APIs',
+        email: 'michael@example.com',
+        phone: '(234) 567-8901',
+        portfolio: 'michaelchen.dev'
+      },
     ];
     
     setJobs(mockJobs);
     setApplications(mockApplications);
+    setFilteredApplications(mockApplications);
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setNewJob(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = applications.filter(app => 
+        app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        app.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        app.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+      setFilteredApplications(filtered);
+    } else {
+      setFilteredApplications(applications);
+    }
+  }, [searchTerm, applications]);
+
+  const handleViewDeveloper = (developer) => {
+    setSelectedDeveloper(developer);
   };
 
-  const handlePostJob = (e) => {
-    e.preventDefault();
-    // In a real app, this would be an API call
-    const jobToAdd = {
-      id: jobs.length + 1,
-      title: newJob.title,
-      posted: new Date().toISOString().split('T')[0],
-      applications: 0,
-      status: 'Active',
-      salary: newJob.salary
-    };
-    
-    setJobs([jobToAdd, ...jobs]);
-    setNewJob({
-      title: '',
-      description: '',
-      type: 'Full-time',
-      salary: '',
-      location: '',
-      remote: false
-    });
-    
-    // Show success notification
-    document.querySelector('.notification').style.display = 'block';
-    setTimeout(() => {
-      document.querySelector('.notification').style.display = 'none';
-    }, 3000);
+  const handleJobPosted = (newJob) => {
+    setJobs([newJob, ...jobs]);
+    setActiveTab('jobs');
+  };
+
+  const handleStatusChange = (applicationId, newStatus) => {
+    const updatedApplications = applications.map(app => 
+      app.id === applicationId ? { ...app, status: newStatus } : app
+    );
+    setApplications(updatedApplications);
   };
 
   return (
@@ -137,11 +124,6 @@ const EmployerDashboard = () => {
           <div className="shape pyramid"></div>
           <div className="shape sphere"></div>
         </div>
-      </div>
-
-      {/* Notification */}
-      <div className="notification">
-        Job posted successfully!
       </div>
 
       {/* Dashboard Tabs */}
@@ -165,97 +147,56 @@ const EmployerDashboard = () => {
           <i className="fas fa-users"></i> Applicants
         </button>
         <button 
-          className={`tab-btn ${activeTab === 'post' ? 'active' : ''}`}
-          onClick={() => setActiveTab('post')}
+          className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
+          onClick={() => {
+            setActiveTab('profile');
+            setShowCompanyProfile(true);
+          }}
         >
-          <i className="fas fa-plus"></i> Post New Job
+          <i className="fas fa-building"></i> Company Profile
         </button>
       </div>
 
       {/* Dashboard Content */}
       <div className="dashboard-content">
         {activeTab === 'dashboard' && (
-          <div className="dashboard-overview">
-            <div className="stats-cards">
-              <div className="stat-card">
-                <h3>Active Jobs</h3>
-                <div className="stat-value">12</div>
-                <div className="stat-trend up">+2 from last month</div>
-              </div>
-              <div className="stat-card">
-                <h3>New Applications</h3>
-                <div className="stat-value">24</div>
-                <div className="stat-trend up">+8 from last week</div>
-              </div>
-              <div className="stat-card">
-                <h3>Interview Scheduled</h3>
-                <div className="stat-value">7</div>
-                <div className="stat-trend down">-2 from last week</div>
-              </div>
-              <div className="stat-card">
-                <h3>Hired This Month</h3>
-                <div className="stat-value">3</div>
-                <div className="stat-trend up">+1 from last month</div>
-              </div>
-            </div>
-
-            <div className="charts-container">
-              <div className="chart">
-                <h3>Applications by Position</h3>
-                <div className="chart-visual">
-                  <div className="chart-bar" style={{ '--height': '70%', '--color': '#4f46e5' }}>Frontend</div>
-                  <div className="chart-bar" style={{ '--height': '50%', '--color': '#7c3aed' }}>Backend</div>
-                  <div className="chart-bar" style={{ '--height': '40%', '--color': '#ec4899' }}>UX/UI</div>
-                  <div className="chart-bar" style={{ '--height': '30%', '--color': '#10b981' }}>DevOps</div>
-                </div>
-              </div>
-              <div className="chart">
-                <h3>Hiring Progress</h3>
-                <div className="progress-ring">
-                  <div className="ring" style={{ '--progress': '65' }}></div>
-                  <div className="progress-value">65%</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <DashboardOverview 
+            jobs={jobs} 
+            applications={applications} 
+            onViewJobs={() => setActiveTab('jobs')}
+            onViewApplicants={() => setActiveTab('applicants')}
+          />
         )}
 
         {activeTab === 'jobs' && (
           <div className="jobs-container">
+            <JobRequestForm onJobPosted={handleJobPosted} />
             <div className="jobs-header">
               <h2>Your Job Postings</h2>
-              <button className="add-job-btn" onClick={() => setActiveTab('post')}>
-                <i className="fas fa-plus"></i> Add New Job
-              </button>
+              <p>{jobs.length} active job{jobs.length !== 1 ? 's' : ''}</p>
             </div>
             
             <div className="jobs-grid">
-              {jobs.map(job => (
-                <div className="job-card" key={job.id}>
-                  <div className="job-card-header">
-                    <h3>{job.title}</h3>
-                    <span className={`status-badge ${job.status.toLowerCase()}`}>{job.status}</span>
-                  </div>
-                  <div className="job-details">
-                    <div className="detail">
-                      <i className="fas fa-calendar"></i>
-                      <span>Posted: {job.posted}</span>
-                    </div>
-                    <div className="detail">
-                      <i className="fas fa-users"></i>
-                      <span>Applications: {job.applications}</span>
-                    </div>
-                    <div className="detail">
-                      <i className="fas fa-money-bill-wave"></i>
-                      <span>Salary: {job.salary}</span>
-                    </div>
-                  </div>
-                  <div className="job-actions">
-                    <button className="action-btn view">View Applicants</button>
-                    <button className="action-btn edit">Edit</button>
-                  </div>
+              {jobs.length > 0 ? (
+                jobs.map(job => (
+                  <JobCard 
+                    key={job.id} 
+                    job={job} 
+                    onEdit={() => console.log('Edit job', job.id)}
+                    onDelete={() => setJobs(jobs.filter(j => j.id !== job.id))}
+                  />
+                ))
+              ) : (
+                <div className="no-jobs">
+                  <p>You haven't posted any jobs yet.</p>
+                  <button 
+                    className="btn-primary"
+                    onClick={() => document.querySelector('.job-request-form').scrollIntoView()}
+                  >
+                    Post Your First Job
+                  </button>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         )}
@@ -264,147 +205,90 @@ const EmployerDashboard = () => {
           <div className="applicants-container">
             <div className="applicants-header">
               <h2>Recent Applications</h2>
-              <div className="filter-controls">
-                <select>
-                  <option>All Positions</option>
-                  <option>Frontend Developer</option>
-                  <option>UX/UI Designer</option>
-                  <option>Backend Engineer</option>
-                </select>
-                <select>
-                  <option>All Statuses</option>
-                  <option>New</option>
-                  <option>Reviewed</option>
-                  <option>Interview</option>
-                  <option>Rejected</option>
+              <div className="applicants-controls">
+                <div className="search-box">
+                  <i className="fas fa-search"></i>
+                  <input 
+                    type="text" 
+                    placeholder="Search applicants..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <select className="status-filter">
+                  <option value="all">All Statuses</option>
+                  <option value="New">New</option>
+                  <option value="Reviewed">Reviewed</option>
+                  <option value="Interview">Interview</option>
+                  <option value="Rejected">Rejected</option>
                 </select>
               </div>
             </div>
             
             <div className="applicants-table">
               <div className="table-header">
-                <div>Candidate</div>
-                <div>Position</div>
-                <div>Status</div>
-                <div>Applied</div>
-                <div>Experience</div>
-                <div>Actions</div>
+                <div className="header-cell">Candidate</div>
+                <div className="header-cell">Applied For</div>
+                <div className="header-cell">Date</div>
+                <div className="header-cell">Status</div>
+                <div className="header-cell">Actions</div>
               </div>
               <div className="table-body">
-                {applications.map(app => (
-                  <div className="table-row" key={app.id}>
-                    <div className="candidate-info">
-                      <div className="avatar"></div>
-                      <span>{app.name}</span>
-                    </div>
-                    <div>{app.position}</div>
-                    <div>
-                      <span className={`status-tag ${app.status.toLowerCase()}`}>
-                        {app.status}
-                      </span>
-                    </div>
-                    <div>{app.date}</div>
-                    <div>{app.experience}</div>
-                    <div className="actions">
-                      <button className="icon-btn view"><i className="fas fa-eye"></i></button>
-                      <button className="icon-btn message"><i className="fas fa-comment"></i></button>
-                      <button className="icon-btn schedule"><i className="fas fa-calendar-check"></i></button>
-                    </div>
+                {filteredApplications.length > 0 ? (
+                  filteredApplications.map(app => (
+                    <ApplicantRow 
+                      key={app.id} 
+                      applicant={app} 
+                      onClick={() => handleViewDeveloper(app)}
+                      onStatusChange={(newStatus) => handleStatusChange(app.id, newStatus)}
+                    />
+                  ))
+                ) : (
+                  <div className="no-applicants">
+                    <p>No applicants found{searchTerm ? ` matching "${searchTerm}"` : ''}</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
+
+            {/* Developer Card Modal */}
+            {selectedDeveloper && (
+              <div className="developer-modal">
+                <div className="modal-content">
+                  <button 
+                    className="close-modal" 
+                    onClick={() => setSelectedDeveloper(null)}
+                  >
+                    &times;
+                  </button>
+                  <DeveloperCard 
+                    developer={selectedDeveloper} 
+                    onClose={() => setSelectedDeveloper(null)}
+                    onContact={() => console.log('Contact', selectedDeveloper.email)}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
 
-        {activeTab === 'post' && (
-          <div className="post-job-container">
-            <h2>Post a New Job</h2>
-            <form onSubmit={handlePostJob}>
-              <div className="form-group">
-                <label>Job Title</label>
-                <input 
-                  type="text" 
-                  name="title"
-                  value={newJob.title}
-                  onChange={handleInputChange}
-                  placeholder="e.g. Senior Frontend Developer"
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Job Description</label>
-                <textarea 
-                  name="description"
-                  value={newJob.description}
-                  onChange={handleInputChange}
-                  placeholder="Describe the position, responsibilities, and requirements..."
-                  required
-                  rows="5"
-                ></textarea>
-              </div>
-              
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Job Type</label>
-                  <select 
-                    name="type"
-                    value={newJob.type}
-                    onChange={handleInputChange}
-                  >
-                    <option>Full-time</option>
-                    <option>Part-time</option>
-                    <option>Contract</option>
-                    <option>Freelance</option>
-                    <option>Internship</option>
-                  </select>
-                </div>
-                
-                <div className="form-group">
-                  <label>Salary Range</label>
-                  <input 
-                    type="text" 
-                    name="salary"
-                    value={newJob.salary}
-                    onChange={handleInputChange}
-                    placeholder="e.g. $100,000 - $130,000"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Location</label>
-                  <input 
-                    type="text" 
-                    name="location"
-                    value={newJob.location}
-                    onChange={handleInputChange}
-                    placeholder="e.g. New York, NY"
-                  />
-                </div>
-                
-                <div className="form-group checkbox-group">
-                  <label>
-                    <input 
-                      type="checkbox" 
-                      name="remote"
-                      checked={newJob.remote}
-                      onChange={handleInputChange}
-                    />
-                    Remote Position
-                  </label>
-                </div>
-              </div>
-              
-              <div className="form-actions">
-                <button type="submit" className="post-job-btn">
-                  Post Job
-                </button>
-              </div>
-            </form>
+        {activeTab === 'profile' && showCompanyProfile && (
+          <div className="profile-container">
+            <CompanyProfile 
+              company={{
+                name: user?.company || "Your Company",
+                description: user?.companyDescription || "Tech company specializing in web development",
+                location: user?.location || "San Francisco, CA",
+                website: user?.website || "www.yourcompany.com",
+                logo: user?.logo || "/default-company-logo.png",
+                size: user?.companySize || "11-50 employees",
+                founded: user?.founded || "2015"
+              }} 
+              onUpdate={(updatedProfile) => {
+                // In a real app, you would update the user context and/or make an API call
+                console.log("Profile updated:", updatedProfile);
+              }}
+            />
           </div>
         )}
       </div>

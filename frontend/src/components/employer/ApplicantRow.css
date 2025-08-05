@@ -1,0 +1,149 @@
+.applicant-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.2rem;
+  margin: 0.5rem 0;
+  background: #1e1e2f;
+  border-radius: 10px;
+  color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.applicant-row:hover {
+  transform: scale(1.01);
+  box-shadow: 0 6px 20px rgba(0, 198, 255, 0.2);
+}
+
+.applicant-cell {
+  flex: 1;
+  padding: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Avatar and name layout */
+.applicant-cell.candidate {
+  flex: 2;
+  gap: 0.8rem;
+}
+
+.applicant-avatar {
+  background: #00c6ff;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.applicant-info h4 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.applicant-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+/* Position, date, etc */
+.applicant-cell.position p,
+.applicant-cell.date p {
+  font-size: 0.95rem;
+}
+
+/* Status badge */
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.status-new {
+  background-color: #007bff;
+}
+
+.status-reviewed {
+  background-color: #17a2b8;
+}
+
+.status-interview {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.status-rejected {
+  background-color: #dc3545;
+}
+
+/* Actions cell */
+.applicant-cell.actions {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+/* Dropdown */
+.status-select {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  background: #2e2e3e;
+  color: #fff;
+  outline: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.status-select:focus {
+  border-color: #00c6ff;
+}
+
+/* View Button */
+.view-btn {
+  margin-top: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  color: #fff;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.view-btn:hover {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .applicant-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .applicant-cell {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .applicant-cell.actions {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
