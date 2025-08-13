@@ -1,6 +1,6 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { login as loginApi, signup as signupApi } from '../services/api';
+import { login as loginApi, signup as signupApi, requestOtp as requestOtpApi, verifyOtp as verifyOtpApi, resendOtp as resendOtpApi } from '../services/api';
 
 export const AuthContext = createContext();
 
@@ -39,6 +39,48 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const requestOtp = async (email) => {
+    const res = await requestOtpApi(email);
+    if (res.message) {
+      return { 
+        success: true, 
+        meta: { 
+          emailMode: res.emailMode, 
+          previewUrl: res.previewUrl,
+          note: res.note 
+        } 
+      };
+    }
+    return { success: false, error: res.error };
+  };
+
+  const verifyOtp = async (email, otp) => {
+    const res = await verifyOtpApi(email, otp);
+    if (res.token) {
+      localStorage.setItem('token', res.token);
+      localStorage.setItem('user', JSON.stringify(res.user));
+      setIsAuthenticated(true);
+      setUser(res.user);
+      return { success: true };
+    }
+    return { success: false, error: res.error };
+  };
+
+  const resendOtp = async (email) => {
+    const res = await resendOtpApi(email);
+    if (res.message) {
+      return { 
+        success: true, 
+        meta: { 
+          emailMode: res.emailMode, 
+          previewUrl: res.previewUrl,
+          note: res.note 
+        } 
+      };
+    }
+    return { success: false, error: res.error };
+  };
+
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
@@ -47,7 +89,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, signup, logout, loading, requestOtp, verifyOtp, resendOtp }}>
       {children}
     </AuthContext.Provider>
   );

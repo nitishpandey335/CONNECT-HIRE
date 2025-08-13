@@ -17,3 +17,30 @@ export const login = async (email, password) => {
   });
   return res.json();
 };
+
+export const requestOtp = async (email) => {
+  const res = await fetch(`${API_URL}/request-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+  return res.json();
+};
+
+export const verifyOtp = async (email, otp) => {
+  const res = await fetch(`${API_URL}/verify-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, otp })
+  });
+  return res.json();
+};
+
+export const resendOtp = async (email) => {
+  const res = await fetch(`${API_URL}/resend-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+  return res.json();
+};

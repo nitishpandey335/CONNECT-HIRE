@@ -9,6 +9,10 @@ const UserSchema = new mongoose.Schema({
   role: { type: String, enum: ['employer', 'jobseeker'], required: true },
   company: { type: String },
   createdAt: { type: Date, default: Date.now },
+  // One-time passcode login
+  otpCodeHash: { type: String },
+  otpExpiresAt: { type: Date },
+  
 });
 
 // Hash password before saving
